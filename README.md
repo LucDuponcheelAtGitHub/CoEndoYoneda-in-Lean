@@ -1,4 +1,4 @@
-# Pointfree CoYoneda lemmas for endofunctors of functional categories, proved as a `Lean` theorem.
+# Pointfree CoYoneda lemmas for endofunctors of functional categories, proved as a `Lean` theorems.
 
 All comments are welcome at luc.duponcheel [at] gmail.com.
 
