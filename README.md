@@ -854,7 +854,7 @@ theorem coYonedaLemma1
 `naturalTransformation : NaturalTransformation btc function (btc s) utc` can be defined in terms of
 `utc_s : utc s := naturalTransformation.τ ι`.
 
-### `pointfulCoYonedaLemma1` and `coYonedaLemma1`
+### `pointfulCoYonedaLemma2` and `coYonedaLemma2`
 
 ```
 theorem pointfulCoYonedaLemma2
