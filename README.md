@@ -17,7 +17,7 @@ My code is perhaps not the most idiomatic `Lean` code one can think of. It would
 The category theory `class`es are my own low-profile ones. It would be interesting to somehow use
 the standard category theory `class`es.
 
-The proofs of the `theorem`s are `calc` based equatiobal reasoning proofs. It would be
+The proofs of the `theorem`s are `calc` based equational reasoning proofs. It would be
 interesting to somehow use `simp` tactic based ones.
 
 The last proofs cannot be simplified using functional extension because the argument used is not a
