@@ -2,7 +2,7 @@
 
 All comments are welcome at luc.duponcheel [at] gmail.com.
 
-**warning*
+**warning**
 
 Work in progress. 
 For the moment there are 2 versions of the code.
