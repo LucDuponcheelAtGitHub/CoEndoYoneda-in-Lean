@@ -2,6 +2,12 @@
 
 All comments are welcome at luc.duponcheel [at] gmail.com.
 
+**warning*
+
+Work in progress. 
+For the moment there are 2 versions of the code.
+This document is in sync with the first version. 
+
 ## `Lean`
 
 All specifications, implementations, definitions and proofs are written using  `Lean`.
