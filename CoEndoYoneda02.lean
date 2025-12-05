@@ -1,7 +1,6 @@
 namespace CoEndoYoneda02
 
 open Function
-
 open Unit
 
 --
@@ -548,7 +547,7 @@ abbrev Transformation btc₀ btc₁ utc₀ utc₁ :=
 -- from the coYoneda (function-valued) functor
 -- to a function-valued functor
 -- defined in terms of
--- a functorial value of that function-valued functor
+-- a functorial value of that function-valued functor as below
 -- is a natural transformation
 
 def functorialValueToTransformation
@@ -1058,6 +1057,16 @@ def globalFunctorialValueToEndoTransformation1
 
       endoTransformation
 
+-- every transformation
+-- from the coEndoYoneda endofunctor
+-- to an endofunctor
+-- defined in terms of
+-- a global functorial value of that endofunctor as below
+-- is a natural transformation
+--
+-- equality holds up to being composed at the left with
+-- a global morphism
+
 @[simp] theorem pointfreeCoEndoYonedaLemma1
     {btc : binaryTypeConstructor}
     {functionalCategory : FunctionalCategory btc}
@@ -1217,6 +1226,17 @@ def globalEndoNaturalTransformation2
           endoNaturalTransformation.τ t ≫
             globalTriple.ν (utc t)
     }
+
+-- every natural transformation
+-- from the coEndoYoneda endofunctor
+-- to an endofunctor
+-- can, up to the neutral element natural transformation
+-- of the global triple, be defined in terms of
+-- a global functorial value of that endofunctor
+-- that is defined in terms of that natural transformation
+--
+-- equality holds up to being composed at the left with
+-- a global morphism
 
 @[simp] theorem pointfreeCoEndoYonedaLemma2
     {btc : binaryTypeConstructor}
@@ -1412,6 +1432,16 @@ def globalFunctorialValueToEndoTransformation3
                 globalTriple.μ (utc t)
   }
 
+-- every transformation
+-- from the coEndoYoneda endofunctor
+-- to an endofunctor
+-- defined in terms of
+-- a global global functorial value of that endofunctor as below
+-- is a natural transformation
+--
+-- equality holds up to being composed at the left with
+-- a global morphism
+
 @[simp] theorem pointfreeCoEndoYonedaLemma3
     {btc : binaryTypeConstructor}
     {functionalCategory : FunctionalCategory btc}
@@ -1588,6 +1618,16 @@ def endoNaturalTransformationToEndoTransformation4
       endoFunctor
       (toGlobal (btc s s) ι ≫
         endoNaturalTransformation.τ s)
+
+-- every natural transformation
+-- from the coEndoYoneda endofunctor
+-- to an endofunctor
+-- be defined in terms of
+-- a global global functorial value of that endofunctor
+-- that is defined in terms of that natural transformation
+--
+-- equality holds up to being composed at the left with
+-- a global morphism
 
 @[simp] theorem pointfreeCoEndoYonedaLemma4
     {btc : binaryTypeConstructor}
