@@ -1,78 +1,9 @@
-# Pointfree CoYoneda lemmas for endofunctors of functional categories, proved as a `Lean` theorems.
+namespace CoEndoYoneda03
 
-**warning**
+set_option linter.unusedVariables false
 
-This is work in progress. For the moment there are three versions of the code. This document is in sync with the third
-version.
+open Function Unit
 
-**remark**
-
-The code is self-contained. The category theory library only provides those specifications, implementations, proofs and
-definitions that are necessary.
-
-The category theory library is a, low-profile, programming driven one. This is in high contrast with the official
-`mathlib` category theory library which is a high-profile, mathematics driven one.
-
-All specifications, implementations, proofs and definitions are written using  `Lean`.
-
-- specifications are encoded as `class`es,
-- implementations are encoded as `instance`s,
-- proofs are encoded as `theorem`s.
-- definitions are encoded as `def`s.
-
-The code is, perhaps, not the most idiomatic `Lean` code one can think of. It would be interesting to convert it to more
-idiomatic `Lean` code.
-
-The proofs of many`theorem`s are `calc` based equational reasoning proofs. It would be interesting to convert them to
-`simp` tactic based ones.
-
-**comments**
-
-All comments are welcome at luc [dot] duponcheel [at] gmail [dot] com.
-
-## The CoYoneda lemma
-
-The CoYoneda lemma involves three specifications
-
-- category,
-- functor,
-- natural transformation,
-
-and one category implementation
-
-- the category of types and functions.
-
-All functors involved are funtors to that category of types and functions. They are called function valued functors.
-
-The CoYoneda lemma is pointful: it involves function application.
-
-## Our CoEndoYoneda lemmas
-
-Our CoEndoYoneda lemmas involves two more specification
-
-- functional category,
-- triple,
-
-and one triple implementation
-
-- the triple of global values (programs from the `Unit` type).
-
-The functors involved are endofunctors, and the natural transformations involved are natural endotransformations.
-
-The morphisms of functional categories are referred also to as programs.
-
-One of the requirements of functional categories is that functions can, somehow, be used as effectfree programs, but,
-functional categories may have programs, like programs that manipulate internal or external state, that are not such
-functions used as effectfree programs.
-
-Our CoYoneda lemma is pointfree: it only involves program composition.
-
-Just like the pointful CoYoneda lemma is about the relationship between natural transformations and functorial values,
-our pointfree CoYoneda lemma is about the relationship between natural transformations and global functorial values.
-
-## `Category`
-
-```
 abbrev binaryTypeConstructor := Type → Type → Type
 
 class Category (btc : binaryTypeConstructor) where
@@ -84,14 +15,7 @@ class Category (btc : binaryTypeConstructor) where
 export Category (ι andThen)
 
 infixr:80 " ≫ " => andThen
-```
 
-The `Category` specification for a binary type constructor parameter `btc` declares members, `ι` and `andThen`, and
-defines an `infixr` version, `≫`, of `andThen`.
-
-### `CategoryProperties`
-
-```
 class CategoryProperties (btc : binaryTypeConstructor) [Category btc] : Prop
   where
 
@@ -113,19 +37,11 @@ export CategoryProperties (
   )
 
 attribute [simp]
-  category_right_identity
+category_right_identity
   category_left_identity
   category_associativity
-```
 
-`CategoryProperties` defines properties `category_left_identity`, `category_right_identity` and
-`category_associativity`.
-
-### `Category function`
-
-```
 abbrev function t₀ t₁ := t₀ → t₁
-
 
 instance : Category function where
 
@@ -134,13 +50,7 @@ instance : Category function where
   andThen {t₀ t₁ t₂ : Type} :
     function t₀ t₁ → function t₁ t₂ → function t₀ t₂ :=
       λ fun_t₀_t₁ fun_t₁_t₂ ↦ fun_t₁_t₂ ∘ fun_t₀_t₁
-```
 
-`instance : Category function` is an implementation of `class Category`.
-
-Below are the `theorem`s proving the `CategoryProperties` properties.
-
-```
 @[simp] theorem functionCategory_left_identity
     {t₀ t₁ : Type} {fun_t₀_t₁ : function t₀ t₁} :
 
@@ -148,8 +58,6 @@ Below are the `theorem`s proving the `CategoryProperties` properties.
 
 @[simp] theorem functionCategory_right_identity
     {t₀ t₁ : Type} {fun_t₀_t₁ : function t₀ t₁} :
-
-  fun_t₀_t₁ ≫ ι = fun_t₀_t₁ := by simp[andThen, ι]
 
   fun_t₀_t₁ ≫ ι = fun_t₀_t₁ := by simp[andThen, ι]
 
@@ -170,10 +78,7 @@ Below are the `theorem`s proving the `CategoryProperties` properties.
 
   (fun_t₀_t₁ ≫ fun_t₁_t₂) ≫ fun_t₂_t₃ = fun_t₀_t₁ ≫ (fun_t₁_t₂ ≫ fun_t₂_t₃) :=
   by simp[andThen]
-```
 
-## `Functor`
-```
 abbrev unaryTypeConstructor := Type → Type
 
 class Functor
@@ -183,13 +88,7 @@ class Functor
   φ {t₀ t₁ : Type} : function (btc₀ t₀ t₁) (btc₁ (utc t₀) (utc t₁))
 
 export Functor (φ)
-```
 
-The `Functor` specification for a unary type constructor parameter `utc` declares member, `φ`.
-
-### `FunctorProperties`
-
-```
 class FunctorProperties
     {btc₀ : binaryTypeConstructor}
     {btc₁ : binaryTypeConstructor}
@@ -210,26 +109,14 @@ class FunctorProperties
 export FunctorProperties (functor_identity functor_sequential_composition)
 
 attribute [simp] functor_identity functor_sequential_composition
-```
 
-`FunctorProperties` defines properties `functor_identity` and `functor_sequential_composition`.
-
-### `instance identityEndoFunctor`
-
-```
 instance identityEndoFunctor
     {btc : binaryTypeConstructor}
     [Category btc] :
   Functor btc btc Id where
 
     φ {t₀ t₁ : Type} : function (btc t₀ t₁) (btc (Id t₀) (Id t₁)) := id
-```
 
-`instance identityEndoFunctor` is an implementation of `class Functor`.
-
-Below are the `theorem`s proving the `FunctorProperties` properties.
-
-```
 @[simp] theorem identityEndoFunctor_identity
     {btc : binaryTypeConstructor}
     [Category btc]
@@ -248,11 +135,7 @@ Below are the `theorem`s proving the `FunctorProperties` properties.
   identityEndoFunctor.φ (btc_t₀_t₁ ≫ btc_t₁_t₂) =
   identityEndoFunctor.φ btc_t₀_t₁ ≫ identityEndoFunctor.φ btc_t₁_t₂ :=
     by simp[φ]
-```
 
-### `instance composedFunctor`
-
-```
 abbrev composedUnaryTypeConstructor
     (utc₀ : unaryTypeConstructor)
     (utc₁ : unaryTypeConstructor) : unaryTypeConstructor := utc₁ ∘ utc₀
@@ -274,13 +157,7 @@ instance composedFunctor
         functor₁.φ ∘ functor₀.φ
 
 infixr:80 " ⋙ " => composedFunctor
-```
 
-`instance composedFunctor` is an implementation of `class Functor`.
-
-Below are the `theorem`s proving the `FunctorProperties` properties.
-
-```
 @[simp] theorem composedFunctor_identity
     {btc₀ : binaryTypeConstructor}
     {btc₁ : binaryTypeConstructor}
@@ -319,11 +196,7 @@ Below are the `theorem`s proving the `FunctorProperties` properties.
   (functor₀ ⋙ functor₁).φ (btc_t₀_t₁ ≫ btc_t₁_t₂) =
   (functor₀ ⋙ functor₁).φ btc_t₀_t₁ ≫ (functor₀ ⋙ functor₁).φ btc_t₁_t₂ := by
   simp[composedFunctor]
-```
 
-### `instance coYonedaFunctorOf`
-
-```
 instance coYonedaFunctorOf
     {btc : binaryTypeConstructor}
     [Category btc]
@@ -333,13 +206,7 @@ instance coYonedaFunctorOf
     φ {t₀ t₁ : Type} :
       function (btc t₀ t₁) (function ((btc s) t₀) ((btc s) t₁)) :=
         λ btc_t₀_t₁ btc_s_t₀ ↦ btc_s_t₀ ≫ btc_t₀_t₁
-```
 
-`def coYonedaFunctorOf` is an implementation of `class Functor`.
-
-Below are the `theorem`s proving the `FunctorProperties` properties.
-
-```
 @[simp] theorem coYonedaFunctor_identity
     {btc : binaryTypeConstructor}
     [Category btc]
@@ -368,11 +235,7 @@ Below are the `theorem`s proving the `FunctorProperties` properties.
       (coYonedaFunctorOf s).φ (btc_t₀_t₁ ≫ btc_t₁_t₂)
     _   = (coYonedaFunctorOf s).φ btc_t₀_t₁ ≫ (coYonedaFunctorOf s).φ btc_t₁_t₂
         := funext (λ btc_s_t₀ ↦ category_associativity)
-```
 
-## `NaturalTransformation`
-
-```
 class NaturalTransformation
     (btc₀ : binaryTypeConstructor)
     (btc₁ : binaryTypeConstructor)
@@ -382,13 +245,7 @@ class NaturalTransformation
    τ (t : Type) : btc₁ (utc₀ t) (utc₁ t)
 
 export NaturalTransformation (τ)
-```
 
-The `NaturalTransformation` specification declares member, `τ`.
-
-### `NaturalTransformationProperties`
-
-```
 class NaturalTransformationProperties
     {btc₀ : binaryTypeConstructor}
     {btc₁ : binaryTypeConstructor}
@@ -408,15 +265,6 @@ export NaturalTransformationProperties (naturalTransformation_natural)
 
 attribute [simp] naturalTransformation_natural
 
-```
-
-`NaturalTransformationProperties` defines property `naturalTransformation_natural`.
-
-## `CoYoneda` lemmas
-
-### `pointfulCoYonedaLemma1` and `coYonedaLemma1`
-
-```
 abbrev Transformation btc₀ btc₁ utc₀ utc₁ :=
   NaturalTransformation btc₀ btc₁ utc₀ utc₁
 
@@ -474,7 +322,7 @@ theorem coYonedaLemma1
     {category : Category btc}
     [CategoryProperties btc]
     {utc : unaryTypeConstructor}
-    (functionValuedFunctor : Functor btc function utc)
+    {functionValuedFunctor : Functor btc function utc}
     [FunctorProperties functionValuedFunctor]
     {s : Type}
     (utc_s : utc s)
@@ -493,16 +341,7 @@ theorem coYonedaLemma1
           (functorialValueToTransformation functionValuedFunctor utc_s).τ t₁
       := funext λ btc_s_t₀ ↦
            pointfulCoYonedaLemma1 functionValuedFunctor utc_s
-```
 
-`pointfulCoYonedaLemma1` proves that for every function valued functor
-`functionValuedFunctor : Functor btc function utc`, every transformation from `coYonedaFunctorOf s` defined in terms of
-a functorial value `utc_s : utc s`, defining `τ` as `(functionValuedFunctor.φ . utc_s)` is natural.
-
-
-### `pointfulCoYonedaLemma2` and `coYonedaLemma2`
-
-```
 @[simp]theorem pointfulCoYonedaLemma2
     {btc : binaryTypeConstructor}
     [Category btc]
@@ -510,8 +349,7 @@ a functorial value `utc_s : utc s`, defining `τ` as `(functionValuedFunctor.φ 
     {utc : unaryTypeConstructor}
     (functionValuedFunctor : Functor btc function utc)
     {s : Type}
-    (naturalTransformation :
-      NaturalTransformation btc function (btc s) utc)
+    (naturalTransformation :NaturalTransformation btc function (btc s) utc)
     [NaturalTransformationProperties
       (coYonedaFunctorOf s) functionValuedFunctor]
     {t : Type}
@@ -559,17 +397,7 @@ a functorial value `utc_s : utc s`, defining `τ` as `(functionValuedFunctor.φ 
          functionValuedFunctor (naturalTransformation.τ s ι)).τ t
       := funext λ btc_s_t ↦
            pointfulCoYonedaLemma2 functionValuedFunctor naturalTransformation
-```
 
-`pointfulCoYonedaLemma2`, and its companion `coYonedaLemma2`, prove that for every natural transformation, 
-`naturalTransformation : NaturalTransformation btc function (btc s) utc` and every function valued functor 
-`functionValuedFunctor : Functor btc function utc`, that natural transformation can be defined in terms of
-the functorial value `g_utc_s : (utc ≻ Global btc) s := naturalTransformation.τ s ι` defining `τ` as
-`(functionValuedFunctor.φ . utc_s)`.
-
-## `Triple`
-
-```
 abbrev EndoFunctor btc utc := Functor btc btc utc
 
 abbrev NaturalEndoTransformation btc utc₀ utc₁ :=
@@ -588,14 +416,7 @@ class Triple (btc : binaryTypeConstructor) (utc : unaryTypeConstructor) where
   η (t : Type) : btc (Id t) (utc t) := neutralElement.τ t
 
   μ (t : Type) : btc ((utc ≻ utc) t) (utc t) := multiplication.τ t
-```
 
-The `Triple` specification declares members, `endoFunctor`, `neutralElement` and `multiplication`, and, for
-convenience, defines members `εφ`, `η` and `μ`.
-
-### `TripleProperties`
-
-```
 class TripleProperties
     {btc : binaryTypeConstructor}
     [Category btc]
@@ -619,13 +440,7 @@ attribute [simp]
   triple_left_identity
   triple_right_identity
   triple_associativity
-```
 
-`TripleProperties` defines properties `triple_left_identity`, `triple_right_identity` and `triple_associativity`.
-
-## `FunctionalCategory`
-
-```
 abbrev Global (btc : binaryTypeConstructor) (t : Type) := (btc Unit ≻ Id) t
 
 class FunctionalCategory (btc : binaryTypeConstructor) extends Category btc
@@ -642,41 +457,19 @@ def toGlobal
     [FunctionalCategory btc]
     (t : Type) :
   function t ((Global btc) t) := const Unit ≫ functionalFunctor.φ
-```
 
-The `FunctionalCategory` specification declares members, `functionalFunctor` and `γμ`.
-
-For convenience, also `toGlobal`, transforming values to morphisms, is defined. 
-
-### `instance coYonedaEndoFunctorOf`
-
-```
 instance coYonedaEndoFunctorOf
     {btc : binaryTypeConstructor}
     [FunctionalCategory btc]
     (s : Type) :
   EndoFunctor btc (btc s ≻ Id) := coYonedaFunctorOf s ⋙ functionalFunctor
-```
 
-`instance coYonedaEndoFunctorOf` is an implementation of `class Functor` because it is the composition of two
-implementations of `class Functor`.
-
-### `instance globalEndoFunctor`
-
-```
 instance globalEndoFunctor {btc : binaryTypeConstructor} [FunctionalCategory btc] :
   EndoFunctor btc (btc Unit ≻ Id) := coYonedaEndoFunctorOf Unit
-```
 
-`instance coYonedaEndoFunctorOf` is an implementation of `class Functor` that is a specific case of
-`instance coYonedaEndoFunctorOf`.
-
-### `instance globalTriple`
-
-```
 instance globalTriple {btc : binaryTypeConstructor} [FunctionalCategory btc] :
   Triple btc (Global btc) where
-
+    -- use globalEndoFunctor instead of endoFunctor.endoFunctor
     endoFunctor : EndoFunctor btc (Global btc) := globalEndoFunctor
 
     neutralElement : NaturalEndoTransformation btc Id (Global btc) :=
@@ -691,15 +484,7 @@ instance globalTriple {btc : binaryTypeConstructor} [FunctionalCategory btc] :
         τ (t : Type) : btc (((Global btc) ≻ (Global btc)) t) ((Global btc) t) :=
           γμ
       }
-```
 
-In what follows it is assumed that `instance globalTriple` is an implementation of `class Triple`, in other words, that
-`globalTriple.η` and `globalTriple.μ`  satisfy the properties of `TripleProperties`. Recall that `γμ` is not defined in 
-`class FunctionalCategory`.
-
-### `FunctionalCategoryProperties`
-
-```
 class FunctionalCategoryProperties
     (btc : binaryTypeConstructor)
     [FunctionalCategory btc] : Prop
@@ -708,19 +493,20 @@ class FunctionalCategoryProperties
   νProperty {t : Type} {g_t : (Global btc) t} :
     toGlobal ((Global btc) t) g_t = g_t ≫ globalTriple.η t
 
+  -- no μProperty is defined because
+  -- a μTheorem can be proved using νProperty
+
 export FunctionalCategoryProperties (νProperty)
 
 attribute [simp] νProperty
-```
 
-`FunctionalCategoryProperties` defines property `νProperty`. No `μProperty` is defined because a `μTheorem` can be
-proved using `νProperty`.
+instance : FunctionalCategory function where
+    functionalFunctor : Functor function function Id := identityEndoFunctor
 
-## `CoEndoYoneda` lemmas
+    γμ {t : Type} :
+      function ((function Unit ≻ function Unit) t) ((function Unit) t) :=
+        (. unit)
 
-### `pointfreeBinding`
-
-```
 def bind {t₀ t₁ : Type} : t₀ → (function t₀ t₁) → t₁ :=
   λ v_t₀ fun_t₀_t₁ => fun_t₀_t₁ v_t₀
 
@@ -741,13 +527,8 @@ infixl:80 " >>= " => bind
     ((toGlobal t₀) v_t₀ ≫ functionalFunctor.φ fun_t₀_t₁ : (Global btc) t₁)
   _   = (toGlobal t₁) (v_t₀ >>= fun_t₀_t₁)
       := functor_sequential_composition
-```
 
-`pointfreeBinding` proves a pointfree version of value binding.
-
-### `pointfreeCoEndoYonedaProperty`
-
-```
+-- just a special case of pointfreeBinding
 @[simp] theorem pointfreeCoEndoYonedaProperty
     {btc : binaryTypeConstructor}
     {functionalCategory : FunctionalCategory btc}
@@ -765,13 +546,8 @@ infixl:80 " >>= " => bind
     toGlobal ((btc s) t₁) (btc_s_t₀ ≫ btc_t₀_t₁)
   _   = toGlobal ((btc s) t₀) btc_s_t₀ ≫ (coYonedaEndoFunctorOf s).φ btc_t₀_t₁
       := Eq.symm pointfreeBinding
-```
 
-`pointfreeCoEndoYonedaProperty` is just a special case of `pointfreeBinding`.
-
-### `pointfreeGlobal`
-
-```
+-- just a special case of pointfreeCoEndoYonedaProperty
 @[simp] theorem pointfreeGlobal
     {btc : binaryTypeConstructor}
     {functionalCategory : FunctionalCategory btc}
@@ -788,13 +564,7 @@ infixl:80 " >>= " => bind
     toGlobal ((Global btc) t₁) (g_t₀ ≫ btc_t₀_t₁)
   _   = toGlobal ((Global btc) t₀) g_t₀ ≫ globalEndoFunctor.φ btc_t₀_t₁
       := pointfreeCoEndoYonedaProperty Unit
-```
 
-`pointfreeGlobal` is just a special case of `pointfreeCoEndoYonedaProperty`.
-
-### `pointfreeCoEndoYonedaLemma1`
-
-```
 abbrev EndoTransformation btc utc₀ utc₁ := Transformation btc btc utc₀ utc₁
 
 instance globalFunctorialValueToEndoTransformation1
@@ -887,18 +657,7 @@ instance globalFunctorialValueToEndoTransformation1
            (globalFunctorialValueToEndoTransformation1
              endoFunctor g_utc_s).τ t₁)
       := Eq.symm category_associativity
-```
 
-`pointfreeCoEndoYonedaLemma1` proves that for every endofunctor `endoFunctor : EndoFunctor btc utc`, every
-endotransformation from `coYonedaEndoFunctorOf s` defined in terms of a global functorial value
-`g_utc_s : (utc ≻ Global btc) s`, defining `τ` as `functionalFunctor.φ (g_utc_s ≫ endoFunctor.φ .)` is natural.
-
-The `naturalTransformation_natural` equality is modulo being composed at the left with a global morphism
-`toGlobal ((btc s) t₀) btc_s_t₀`. 
-
-### `pointfreeCoEndoYonedaLemma2`
-
-```
 instance globalEndoTransformation
     {btc : binaryTypeConstructor}
     [FunctionalCategory btc]
@@ -986,21 +745,8 @@ instance globalEndoTransformation
             endoFunctor
             (toGlobal (btc s s) ι ≫ naturalEndoTransformation.τ s)).τ t
       := Eq.symm pointfreeBinding
-```
 
-`pointfreeCoEndoYonedaLemma2` proves that for every natural endotransformation, the endotransformation
-`globalEndoTransformation : EndoTransformation btc (btc s ≻ Id) (utc ≻ Global btc)`, defining `τ` as
-`naturalEndoTransformation.τ t ≫ globalTriple.η (utc t)`, can be defined in terms of the global functorial value
-`g_utc_s : (utc ≻ (Global btc ≻ Id)) s := toGlobal (btc s s) ι ≫ τ` defining `τ` as
-`functionalFunctor.φ (g_utc_s ≫ endoFunctor.φ .)`. 
-
-The  equality is modulo being composed at the left with a global morphism `toGlobal ((btc s) t) btc_s_t`.
-
-`pointfreeCoEndoYonedaLemma1` proves that `globalEndoTransformation` is natural.
-
-### `μTheorem`
-
-```
+-- defined to keep the type system happy
 def globalTripleOf
     (btc : binaryTypeConstructor) :
   [FunctionalCategory btc] → Triple btc (Global btc) := @globalTriple btc
@@ -1025,13 +771,7 @@ def globalTripleOf
       := congrArg (g_g_t ≫ .) triple_left_identity
   _   = g_g_t
       := category_right_identity
-```
 
-`μTheorem` is similar to (and proved using) `νProperty`.
-
-### `pointfreeCoEndoYonedaLemma3`
-
-```
 def globalFunctorialValueToEndoTransformation3
     {btc : binaryTypeConstructor}
     [FunctionalCategory btc]
@@ -1152,22 +892,7 @@ def globalFunctorialValueToEndoTransformation3
               endoFunctor
               g_g_utc_s).τ t₁)
       := Eq.symm category_associativity
-```
 
-`pointfreeCoEndoYonedaLemma1` proves that for every endofunctor `endoFunctor : EndoFunctor btc utc`, every
-endotransformation from `coYonedaEndoFunctorOf s` defined in terms of a global global functorial value
-`g_g_utc_s : (utc ≻ Global btc ≻ Global btc) s`, defining `τ` as
-`functionalFunctor.φ (g_g_utc_s ≫ (endoFunctor ⋙ globalEndoFunctor).φ .) ≫ globalTriple.μ (utc t)` is natural.
-
-The `naturalTransformation_natural` equality is modulo being composed at the left with a global morphism
-`toGlobal ((btc s) t₀) btc_s_t₀`. 
-
-Using function extensionality to define a companion theorem does not work because the argument
-`toGlobal ((btc s) t₀) btc_s_t₀` is not a general argument of type `btc Unit (btc s t₀)`.
-
-### `pointfreeCoEndoYonedaLemma4`
-
-```
 @[simp] theorem pointfreeCoEndoYonedaLemma4
     {btc : binaryTypeConstructor}
     {functionalCategory : FunctionalCategory btc}
@@ -1191,6 +916,7 @@ Using function extensionality to define a companion theorem does not work becaus
   toGlobal ((btc s) t) btc_s_t ≫
     (globalFunctorialValueToEndoTransformation3
       endoFunctor (toGlobal (btc s s) ι ≫ naturalEndoTransformation.τ s)).τ t :=
+
 
   calc
     toGlobal ((btc s) t) btc_s_t ≫ naturalEndoTransformation.τ t
@@ -1234,36 +960,100 @@ Using function extensionality to define a companion theorem does not work becaus
             endoFunctor
             (toGlobal (btc s s) ι ≫ naturalEndoTransformation.τ s)).τ t
       := Eq.symm category_associativity
-```
 
-`pointfreeCoEndoYonedaLemma4` proves that every natural endotransformation, 
-`naturalEndoTransformation : NaturalEndoTransformation btc (btc s ≻ Id) (utc ≻ Global btc)` and every and endofunctor
-`endoFunctor : Functor btc btc utc`, that natural endotransformation, can be defined in terms of
-the global functorial value
-`g_g_utc_s : (utc ≻ Global btc ≻ Global btc) s := toGlobal (btc s s) ι ≫ naturalEndoTransformation.τ s` defining `τ` as
-`functionalFunctor.φ (g_g_utc_s ≫ (endoFunctor ⋙ globalEndoFunctor).φ .) ≫ globalTriple.μ (utc t)`. 
+end CoEndoYoneda03
 
-The equality is modulo being composed at the left with a global morphism `toGlobal ((btc s) t) btc_s_t`.
+-- instance identityEndoNaturalTransformation
+--     {btc : binaryTypeConstructor}
+--     [Category btc]
+--     {utc : unaryTypeConstructor} :
 
-Using function extensionality to define a companion theorem does not work because the argument
-`toGlobal ((btc s) t) btc_s_t` is not a general argument of type `btc Unit (btc s t)`.
+--   NaturalEndoTransformation btc utc utc where
 
-## Remark
+--     τ (t : Type) := ι
 
-So what are the properties that are used?
+-- @[simp] theorem identityEndoNaturalTransformation_natural
+--     {btc : binaryTypeConstructor}
+--     [Category btc]
+--     [CategoryProperties btc]
+--     {utc : unaryTypeConstructor}
+--     {functor : EndoFunctor btc utc}
+--     {t₀ t₁ : Type}
+--     {btc_t₀_t₁ : btc t₀ t₁} :
 
-- for `pointfreeCoEndoYonedaLemma1` and `pointfreeCoEndoYonedaLemma2`
+--   identityEndoNaturalTransformation.τ t₀ ≫ functor.φ btc_t₀_t₁ =
+--   functor.φ btc_t₀_t₁ ≫ identityEndoNaturalTransformation.τ t₁ :=
 
-  - `category_left_identity`
-  - `category_associativity`
-  - `functor_sequential_composition`
-  - `naturalTransformation_natural`
-  - `νProperty`
+--   calc
+--     identityEndoNaturalTransformation.τ t₀ ≫ functor.φ btc_t₀_t₁
+--   _   = functor.φ btc_t₀_t₁
+--       := Eq.symm category_left_identity
+--   _   = functor.φ btc_t₀_t₁ ≫ identityEndoNaturalTransformation.τ t₁
+--       := Eq.symm category_right_identity
 
-Note that `multiplicationNaturalTransformation` of `Triple` is not needed.  
+-- instance composedEndoNaturalTransformation
+--     {btc : binaryTypeConstructor}
+--     [Category btc]
+--     {utc₀ : unaryTypeConstructor}
+--     {utc₁ : unaryTypeConstructor}
+--     {utc₂ : unaryTypeConstructor}
+--     (endoNaturalTransformation₀ : NaturalEndoTransformation btc utc₀ utc₁)
+--     (endoNaturalTransformation₁ : NaturalEndoTransformation btc utc₁ utc₂) :
+--   NaturalEndoTransformation btc utc₀ utc₂ where
 
-- for `pointfreeCoEndoYonedaLemma3` and `pointfreeCoEndoYonedaLemma4` also
+--     τ (t : Type) :=
+--       endoNaturalTransformation₀.τ t ≫ endoNaturalTransformation₁.τ t
 
-  - `category_right_identity`
-  - `triple_left_identity`
-  
+--  infixr:80 " ≻≻≻ " => composedEndoNaturalTransformation
+
+-- @[simp] theorem composedEndoNaturalTransformation_natural
+--     {btc : binaryTypeConstructor}
+--     [Category btc]
+--     [CategoryProperties btc]
+--     {utc₀ : unaryTypeConstructor}
+--     {utc₁ : unaryTypeConstructor}
+--     {utc₂ : unaryTypeConstructor}
+--     {functor₀ : EndoFunctor btc utc₀}
+--     {functor₁ : EndoFunctor btc utc₁}
+--     {functor₂ : EndoFunctor btc utc₂}
+--     {endoNaturalTransformation₀ : NaturalEndoTransformation btc utc₀ utc₁}
+--     {endoNaturalTransformation₁ : NaturalEndoTransformation btc utc₁ utc₂}
+--     [NaturalTransformationProperties functor₀ functor₁]
+--     [NaturalTransformationProperties functor₁ functor₂]
+--     {t₀ t₁ : Type}
+--     {btc_t₀_t₁ : btc t₀ t₁} :
+
+--   functor₀.φ btc_t₀_t₁ ≫
+--     (endoNaturalTransformation₀ ≻≻≻ endoNaturalTransformation₁).τ t₁ =
+--   (endoNaturalTransformation₀ ≻≻≻ endoNaturalTransformation₁).τ t₀ ≫
+--     functor₂.φ btc_t₀_t₁ :=
+
+--   calc
+--     functor₀.φ btc_t₀_t₁ ≫
+--       (endoNaturalTransformation₀ ≻≻≻ endoNaturalTransformation₁).τ t₁
+--   _   = (functor₀.φ btc_t₀_t₁ ≫
+--           endoNaturalTransformation₀.τ t₁) ≫ endoNaturalTransformation₁.τ t₁
+--       := category_associativity
+--   _   = (endoNaturalTransformation₀.τ t₀ ≫ functor₁.φ btc_t₀_t₁) ≫
+--           endoNaturalTransformation₁.τ t₁
+--       := congrArg
+--            (. ≫ endoNaturalTransformation₁.τ t₁)
+--            naturalTransformation_natural
+--   _   = endoNaturalTransformation₀.τ t₀ ≫
+--           (functor₁.φ btc_t₀_t₁ ≫ endoNaturalTransformation₁.τ t₁)
+--       := Eq.symm category_associativity
+--   _   = endoNaturalTransformation₀.τ t₀ ≫
+--           (endoNaturalTransformation₁.τ t₀ ≫ functor₂.φ btc_t₀_t₁)
+--       := congrArg
+--            (endoNaturalTransformation₀.τ t₀ ≫ .)
+--            naturalTransformation_natural
+--   _   = (endoNaturalTransformation₀ ≻≻≻ endoNaturalTransformation₁).τ t₀ ≫
+--         functor₂.φ btc_t₀_t₁
+--       := category_associativity
+
+-- instance : FunctionalCategory function where
+--     functionalFunctor : Functor function function Id := identityEndoFunctor
+
+--     γμ {t : Type} :
+--       function ((function Unit ≻ function Unit) t) ((function Unit) t) :=
+--         (. unit)
